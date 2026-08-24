@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SMU Campus Hub</title>
+
+  <!-- Tailwind's browser build. It JIT-compiles utility classes (including
+       arbitrary values like text-[12px]) straight from the DOM, so no
+       build step or npm install is needed to host this on GitHub Pages. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- React + ReactDOM (UMD builds, so they attach to window.React /
+       window.ReactDOM -- no bundler required). -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- Babel Standalone transpiles the JSX in icons.js / app.js in the
+       browser at load time. -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Load order matters: icons.js and data.js define global consts that
+       app.js relies on, so they must run first. All three are compiled
+       as separate Babel scripts but share one global scope, since none
+       of them use ES module import/export. -->
+  <script type="text/babel" src="icons.js"></script>
+  <script type="text/babel" src="data.js"></script>
+  <script type="text/babel" src="app.js"></script>
+</body>
+</html>
