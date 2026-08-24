@@ -1,6 +1,5 @@
 // Lightweight inline-SVG icon set, styled after the Lucide icon set (MIT licensed).
 // No npm install needed — everything here is plain React + SVG so this file
-// can be dropped straight into a GitHub Pages site.
 
 const BaseIcon = ({ size = 20, color = 'currentColor', strokeWidth = 2, fill = 'none', style, children, ...rest }) => (
   React.createElement(
