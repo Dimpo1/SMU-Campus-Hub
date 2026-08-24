@@ -1,5 +1,4 @@
 // SMU Campus Hub -- main app component.
-// Loaded after data.js and icons.js (see index.html for load order).
 
 const { useState, useMemo } = React;
 const {
