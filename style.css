@@ -1,0 +1,30 @@
+/* SMU Campus Hub -- stylesheet.
+   Layout and color utilities come from Tailwind's CDN build (loaded in
+   index.html), so this file only holds the handful of things Tailwind's
+   utility classes can't express: the web font import, full-height page
+   sizing, and small interactive/animation tweaks. */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* Hide horizontal scrollbars on the pill/chip filter rows without hiding
+   the ability to scroll them. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Small spin animation used by the pull-to-refresh indicator. */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 0.8s linear infinite;
+}
