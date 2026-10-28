@@ -1,4 +1,5 @@
 // SMU Campus Hub -- main app component.
+// Loaded after data.js and icons.js (see index.html for load order).
 
 const { useState, useMemo } = React;
 const {
@@ -7,7 +8,8 @@ const {
   Image: ImageIcon, Tag, HelpCircle, Heart, Share2, BadgeCheck, FileText,
   Users, Lock, Store, Percent, Zap, Trophy, Flame, Flag, Bell, MessageSquare,
   Send, Check, ArrowLeft, ShieldAlert, GraduationCap, Star,
-  Settings: SettingsIcon, UserCircle, Video, Play,
+  Settings: SettingsIcon, UserCircle, Video, Play, Bus, ClipboardList,
+  Map: MapIcon,
 } = Icons;
 
 function ReportButton({ reported, onReport }) {
@@ -201,6 +203,187 @@ function PaperCard({ post, onLike, onFollow, onReport, onBookmark }) {
       </div>
       <EngagementRow likes={post.likes} liked={post.liked} onLike={() => onLike(post.id)}
         authorName={post.name} saved={post.saved} onBookmark={() => onBookmark(post.id)} dark />
+    </div>
+  );
+}
+
+function Composer({ onSubmit }) {
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState('post');
+  const [text, setText] = useState('');
+  const [paperTitle, setPaperTitle] = useState('');
+  const [media, setMedia] = useState(null);
+  const [pdf, setPdf] = useState(null);
+
+  const addPhoto = () => {
+    const url = DUMMY_IMAGES[Math.floor(Math.random() * DUMMY_IMAGES.length)];
+    setMedia({ type: 'image', url });
+  };
+  const addVideo = () => {
+    const v = DUMMY_VIDEO_THUMBS[Math.floor(Math.random() * DUMMY_VIDEO_THUMBS.length)];
+    setMedia({ type: 'video', url: v.url, duration: v.duration });
+  };
+  const addPdf = () => {
+    const names = ['research-draft.pdf', 'full-paper.pdf', 'manuscript-v2.pdf'];
+    setPdf(names[Math.floor(Math.random() * names.length)]);
+  };
+
+  const submit = () => {
+    if (mode === 'paper') {
+      if (!paperTitle.trim()) return;
+      onSubmit({ id: Date.now(), type: 'paper', name: 'You', tag: 'Postgrad', verified: true, date: '2026-09-03', title: paperTitle, venue: 'Shared by you, 2026', abstract: text || 'No abstract added yet.', followers: 0, following: false, likes: 0, liked: false, media, pdf });
+    } else if (mode === 'question') {
+      if (!text.trim()) return;
+      onSubmit({ id: Date.now(), type: 'question', name: 'You', tag: 'Student', verified: false, society: null, date: '2026-09-03', text, replies: 0, answered: false, likes: 0, liked: false, media });
+    } else {
+      if (!text.trim()) return;
+      onSubmit({ id: Date.now(), type: 'post', name: 'You', tag: 'Student', verified: false, date: '2026-09-03', text, likes: 0, liked: false, comments: 0, media });
+    }
+    setText(''); setPaperTitle(''); setMedia(null); setPdf(null); setOpen(false); setMode('post');
+  };
+
+  return (
+    <div className="mx-4 mt-3 rounded-2xl p-3.5" style={{ background: '#fff', border: '1.5px solid #EEE0CB' }}>
+      {!open ? (
+        <button onClick={() => setOpen(true)} className="w-full flex items-center gap-2.5 text-left">
+          <Avatar name="Y" color={INK} />
+          <span className="flex-1 text-[12.5px] rounded-full px-3.5 py-2" style={{ background: CREAM, color: '#8A8478' }}>What's on your mind?</span>
+        </button>
+      ) : (
+        <div>
+          <div className="flex gap-1.5 mb-2.5">
+            {[['post', 'Share'], ['question', 'Ask seniors'], ['paper', 'Share a paper']].map(([id, label]) => (
+              <button key={id} onClick={() => setMode(id)} className="px-3 py-1 rounded-full text-[9px] font-bold leading-none"
+                style={mode === id ? { background: INK, color: '#fff' } : { background: CREAM, color: '#8A8478' }}>
+                {label}
+              </button>
+            ))}
+          </div>
+          {mode === 'paper' && (
+            <input value={paperTitle} onChange={e => setPaperTitle(e.target.value)} placeholder="Paper title" className="w-full text-[13px] px-3 py-2 rounded-xl outline-none mb-2" style={{ background: CREAM, color: INK }} />
+          )}
+          <textarea value={text} onChange={e => setText(e.target.value)} rows={3}
+            placeholder={mode === 'paper' ? 'One-line abstract...' : mode === 'question' ? 'Ask seniors or your res something...' : 'What\'s on your mind?'}
+            className="w-full text-[13px] px-3 py-2 rounded-xl outline-none resize-none" style={{ background: CREAM, color: INK }} />
+
+          {media && (
+            <div className="relative mt-2">
+              <MediaBlock media={media} />
+              <button onClick={() => setMedia(null)} className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.55)' }}>
+                <X size={13} color="#fff" />
+              </button>
+            </div>
+          )}
+          {pdf && (
+            <div className="flex items-center gap-2 mt-2 px-3 py-2 rounded-xl" style={{ background: CREAM }}>
+              <FileText size={14} color={INK} />
+              <span className="flex-1 text-[11.5px] font-semibold truncate" style={{ color: INK }}>{pdf}</span>
+              <button onClick={() => setPdf(null)}><X size={13} color="#8A8478" /></button>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between mt-2.5">
+            <div className="flex items-center gap-1.5">
+              {mode === 'paper' ? (
+                <button onClick={addPdf} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[10.5px] font-bold" style={{ background: CREAM, color: INK }}>
+                  <FileText size={12} /> Attach PDF
+                </button>
+              ) : (
+                <>
+                  <button onClick={addPhoto} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[10.5px] font-bold" style={{ background: CREAM, color: INK }}>
+                    <ImageIcon size={12} /> Photo
+                  </button>
+                  <button onClick={addVideo} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[10.5px] font-bold" style={{ background: CREAM, color: INK }}>
+                    <Video size={12} /> Video
+                  </button>
+                </>
+              )}
+            </div>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => { setOpen(false); setText(''); setPaperTitle(''); setMedia(null); setPdf(null); }} className="px-3 py-1.5 rounded-full text-[11.5px] font-bold" style={{ color: '#8A8478' }}>Cancel</button>
+              <button onClick={submit} className="px-4 py-1.5 rounded-full text-[11.5px] font-bold text-white" style={{ background: INK }}>Post</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LeaderboardPanel({ onBack }) {
+  const nextTier = 150;
+  return (
+    <div className="h-full flex flex-col" style={{ background: CREAM }}>
+      <div className="flex items-center gap-2.5 px-4 py-3.5" style={{ background: '#fff', borderBottom: '1.5px solid #EEE0CB' }}>
+        <button onClick={onBack}><ArrowLeft size={18} color={INK} /></button>
+        <span className="font-extrabold text-[14px]" style={{ color: INK }}>Leaderboard</span>
+      </div>
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="rounded-2xl overflow-hidden mb-4" style={{ background: `linear-gradient(120deg, ${INK}, #2C4A6E)` }}>
+          <div className="flex items-center gap-2 px-4 py-3">
+            <Trophy size={16} color="#fff" />
+            <span className="text-white font-extrabold text-[12.5px]">This week's top helpers</span>
+          </div>
+          <p className="text-white/85 text-[10.5px] leading-snug px-4 pb-3">
+            Answer a question with 5+ likes within 30 minutes to earn points. Hit 150 to unlock Verified Helper status.
+          </p>
+        </div>
+        <div className="space-y-2.5">
+          {HELPERS.map((h, i) => (
+            <div key={h.id} className="flex items-center gap-2.5 rounded-2xl p-3" style={{ background: '#fff', border: '1.5px solid #EEE0CB' }}>
+              <span className="w-5 text-center font-extrabold text-[13px]" style={{ color: i === 0 ? INK : '#B5AD9D' }}>{i + 1}</span>
+              <Avatar name={h.name} color={h.color} />
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[12.5px]" style={{ color: INK }}>{h.name}</span>
+                  <span className="flex items-center gap-1 text-[10.5px] font-bold" style={{ color: h.color }}>
+                    {h.tier === 'Verified Helper' && <Flame size={11} />} {h.points} pts
+                  </span>
+                </div>
+                <div className="h-1.5 rounded-full mt-1 overflow-hidden" style={{ background: '#EEE0CB' }}>
+                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, (h.points / nextTier) * 100)}%`, background: h.color }} />
+                </div>
+                <span className="text-[9.5px]" style={{ color: '#8A8478' }}>{h.tier}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TimelineTab({ posts, onAdd, onLike, onFollow, onReport, onBookmark }) {
+  return (
+    <div>
+      <Composer onSubmit={onAdd} />
+      <div className="px-4 pt-3 pb-4 space-y-3">
+        {posts.map(post => {
+          if (post.type === 'post') return <PostCard key={post.id} post={post} onLike={onLike} onReport={onReport} onBookmark={onBookmark} />;
+          if (post.type === 'question') return <QuestionCard key={post.id} post={post} onLike={onLike} onReport={onReport} onBookmark={onBookmark} />;
+          if (post.type === 'paper') return <PaperCard key={post.id} post={post} onLike={onLike} onFollow={onFollow} onReport={onReport} onBookmark={onBookmark} />;
+          return null;
+        })}
+      </div>
+    </div>
+  );
+}
+
+function MiniCalendar({ onPick, activeDate }) {
+  const [monthOffset, setMonthOffset] = useState(0);
+  const base = new Date(2026, 7, 1 + monthOffset * 31);
+  const monthLabel = base.toLocaleDateString('en-ZA', { month: 'long', year: 'numeric' });
+  const eventDates = new Set(EVENTS.map(e => e.date));
+  const firstDay = new Date(base.getFullYear(), base.getMonth(), 1);
+  const startWeekday = firstDay.getDay();
+  const daysInMonth = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
+  const cells = [...Array(startWeekday).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
+
+  return (
+    <div className="mx-4 mt-2 rounded-2xl p-4" style={{ background: INK }}>
+      <div className="flex items-center justify-between mb-3">
+        <button onClick={() => setMonthOffset(m => m - 1)} className="text-white/70 p-1"><ChevronLeft size={18} /></button>
+        <span className="text-whitost.name} saved={post.saved} onBookmark={() => onBookmark(post.id)} dark />
     </div>
   );
 }
