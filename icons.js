@@ -1,5 +1,6 @@
 // Lightweight inline-SVG icon set, styled after the Lucide icon set (MIT licensed).
 // No npm install needed — everything here is plain React + SVG so this file
+// can be dropped straight into a GitHub Pages site.
 
 const BaseIcon = ({ size = 20, color = 'currentColor', strokeWidth = 2, fill = 'none', style, children, ...rest }) => (
   React.createElement(
@@ -69,4 +70,7 @@ const Icons = {
   UserCircle: (p) => React.createElement(BaseIcon, p, [C(12, 12, 10), C(12, 10, 3), P('M6.2 18.5a6 6 0 0 1 11.6 0')]),
   Video: (p) => React.createElement(BaseIcon, p, [RC(2, 6, 14, 12, 2), P('M23 7l-7 5 7 5V7Z')]),
   Play: (p) => React.createElement(BaseIcon, p, [P('M6 4l14 8-14 8V4Z')]),
+  Bus: (p) => React.createElement(BaseIcon, p, [RC(4, 5, 16, 12, 2), L(4, 13, 20, 13), C(7.5, 19, 1.5), C(16.5, 19, 1.5), L(7.5, 17.5, 7.5, 17.5), L(16.5, 17.5, 16.5, 17.5), L(7, 8, 7, 11), L(17, 8, 17, 11)]),
+  ClipboardList: (p) => React.createElement(BaseIcon, p, [RC(4, 4, 16, 18, 2), RC(8, 2, 8, 4, 1), L(8, 11, 8.01, 11), L(8, 15, 8.01, 15), L(12, 11, 16, 11), L(12, 15, 16, 15)]),
+  Map: (p) => React.createElement(BaseIcon, p, [P('M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z'), L(9, 4, 9, 18), L(15, 6, 15, 20)]),
 };
