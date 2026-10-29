@@ -1,19 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SMU Campus Hub</title>
-    <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
-    <div id="root">
-      <noscript>
-        <div style="font-family: Arial, sans-serif; padding: 2rem; text-align: center; color: #122A45;">
-          SMU Campus Hub needs JavaScript enabled to load.
-        </div>
-      </noscript>
-    </div>
-    <script type="module" src="./app.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SMU Campus Hub</title>
+
+  <!-- Tailwind's browser build. It JIT-compiles utility classes (including
+       arbitrary values like text-[12px]) straight from the DOM, so no
+       build step or npm install is needed to host this on GitHub Pages. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- React + ReactDOM (UMD builds, so they attach to window.React /
+       window.ReactDOM -- no bundler required). -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- Babel Standalone transpiles the JSX in icons.js / app.js in the
+       browser at load time. Pinned to the 7.x line (not just "latest"),
+       since Babel released a breaking v8 that otherwise gets pulled in
+       automatically and silently changes how script tags are handled.
+       Each script below also explicitly declares the react preset. -->
+  <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="root"></div>
+  <div id="debug-overlay" style="display:none; position:fixed; inset:0; background:#fff; color:#122A45; font-family:monospace; font-size:13px; padding:16px; overflow:auto; z-index:9999; white-space:pre-wrap;"></div>
+
+  <!-- Temporary debug helper: if anything throws before the app renders,
+       or the #root div is still empty a few seconds after load, show the
+       actual error on screen. This can be removed once the site is
+       confirmed working -- it's only here to make mobile debugging
+       possible without a desktop console. -->
+  <script>
+    function showDebug(msg) {
+      var el = document.getElementById('debug-overlay');
+      el.style.display = 'block';
+      el.textContent = 'SMU Campus Hub debug info:\n\n' + msg;
+    }
+    window.addEventListener('error', function (e) {
+      showDebug((e.message || 'Unknown error') + '\n\nFile: ' + (e.filename || 'unknown') + '\nLine: ' + (e.lineno || '?'));
+    });
+    window.addEventListener('unhandledrejection', function (e) {
+      showDebug('Unhandled promise rejection:\n' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+    });
+    setTimeout(function () {
+      var root = document.getElementById('root');
+      if (root && root.children.length === 0 && document.getElementById('debug-overlay').style.display === 'none') {
+        showDebug('The page loaded but nothing rendered into #root after 6 seconds.\nThis usually means one of the CDN scripts (Tailwind, React, or Babel) failed to load, possibly blocked by the network or browser.\n\nTry: reloading, switching to a different browser (e.g. Chrome), or checking your connection.');
+      }
+    }, 6000);
+  </script>
+
+  <!-- Load order matters: icons.js and data.js define global consts that
+       app.js relies on, so they must run first. All three are compiled
+       as separate Babel scripts but share one global scope, since none
+       of them use ES module import/export. -->
+  <script type="text/babel" data-presets="react" src="icons.js"></script>
+  <script type="text/babel" data-presets="react" src="data.js"></script>
+  <script type="text/babel" data-presets="react" src="app.js"></script>
+</body>
 </html>
